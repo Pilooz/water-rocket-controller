@@ -4,7 +4,7 @@
 #include <SPI.h>
 #include <SD.h>
 
-#define SD_LED  8  // SD led
+#define SD_LED 8  // SD led
 
 // Set the pins used
 #define cardSelect 4
@@ -27,11 +27,6 @@ void error(uint8_t errno) {
 }
 
 void prepare_logfile() {
-  // see if the card is present and can be initialized:
-  if (!SD.begin(cardSelect)) {
-    Serial.println("Card init. failed!");
-    error(2);
-  }
   char filename[15];
   strcpy(filename, "/FLIGHT00.CSV");
   for (uint8_t i = 0; i < 100; i++) {
@@ -52,21 +47,51 @@ void prepare_logfile() {
   Serial.print("Writing to "); 
   Serial.println(filename);
 
-  pinMode(13, OUTPUT);
-  pinMode(8, OUTPUT);
   Serial.println("Ready!");
+  // Header of file
+  logfile.print("millis"); 
+  logfile.print(";"); 
+  logfile.print("x"); 
+  logfile.print(";"); 
+  logfile.print("y");
+  logfile.print(";"); 
+  logfile.print("z");
+  logfile.print(";"); 
+  logfile.print("ax");
+  logfile.print(";"); 
+  logfile.print("ay");
+  logfile.print(";"); 
+  logfile.print("az");
+  logfile.print(";"); 
+  logfile.println("parachute");
+  logfile.flush();
 }
 
-void write_to_file(unsigned long currentTime, float z, double az) {
+void write_to_file(unsigned long currentTime, float x,  float y,  float z, double ax, double ay, double az, boolean p) {
     digitalWrite(SD_LED, HIGH);
     logfile.print(currentTime); 
     logfile.print(";"); 
+    logfile.print(x); 
+    logfile.print(";"); 
+    logfile.print(y); 
+    logfile.print(";"); 
     logfile.print(z); 
     logfile.print(";"); 
-    logfile.println(az);
+    logfile.print(ax);
+    logfile.print(";"); 
+    logfile.print(ay);
+    logfile.print(";"); 
+    logfile.print(az);
+    logfile.print(";"); 
+    int parachute = p ? 1 : 0;
+    logfile.println(parachute);
     logfile.flush(); // This really writes data in file but causes a consumption peak of about 30mA instead of 10mA
 }
 
 void setup_logger() {
-  prepare_logfile();
+  // see if the card is present and can be initialized:
+  if (!SD.begin(cardSelect)) {
+    Serial.println("Card init. failed!");
+    error(2);
+  }
 }

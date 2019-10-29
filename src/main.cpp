@@ -43,7 +43,7 @@
 #include "moyenne_glissante.h"
 #include "logger.h"
 
-#define LED_BUILTIN     13
+#define LED_BUILTIN    13
 #define START_BUT      12
 #define SERVO_PIN      11
 #define TIMEOUT_SERVO  480 // ms
@@ -135,6 +135,7 @@ void mode_lancement() {
   ledBPM = BLINK240;
   // Init Accelero
   accelero_calibration();
+  prepare_logfile();
   Serial.print(line);
 }
 
@@ -171,7 +172,7 @@ void setup() {
   
   pinMode(START_BUT, INPUT_PULLUP);
   pinMode(LED_BUILTIN, OUTPUT);
-  Serial.println(LED_BUILTIN);
+  pinMode(SD_LED, OUTPUT);
 
   // Init des états de sortie
   digitalWrite(SERVO_PIN, LOW);
@@ -273,7 +274,7 @@ void loop() {
     if ( currentMillis - lastWritingTime > WRITING_INTERVALL ) {
       if (mode != REPOS) {
         if (nb_writes < MAX_WRITE) {
-          write_to_file(currentMillis, z, az);
+          write_to_file(currentMillis, x, y, z, ax, ay, az, parachute_released);
           lastWritingTime = currentMillis;
           nb_writes++;
         }
