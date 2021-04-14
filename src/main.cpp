@@ -56,6 +56,10 @@
 #define PARACHUTE 2
 int mode;
 
+// Constantes pour le servo moteur
+#define ANGLE_ARME 90
+#define ANGLE_REPOS 170
+
 // Pulse constants
 const long BLINK60  = 1000;
 const long BLINK120 = 500;
@@ -97,7 +101,7 @@ void accelero_calibration() {
 void holdServo() {
   Serial.println("Armement du parachute.");
   servo.attach(SERVO_PIN);
-  servo.write(170);
+  servo.write(ANGLE_ARME);
   delay(TIMEOUT_SERVO);
   digitalWrite(SERVO_PIN, LOW);
   servo.detach();
@@ -109,7 +113,7 @@ void releaseServo() {
   if (!parachute_released) {
     Serial.println("Libération du parachute.");
     servo.attach(SERVO_PIN);
-    servo.write(0);
+    servo.write(ANGLE_REPOS);
     delay(TIMEOUT_SERVO);
     digitalWrite(SERVO_PIN, LOW);
     servo.detach();
